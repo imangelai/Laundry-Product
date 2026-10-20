@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Laundry</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css"
+        integrity="sha512-QeR2VH+lsBE5LSAe1Q5EnTBbe7XTBubt8dG93Y7gidSgdMCr8nVqKcfKAMyN96SV8KDbZVTDXChatu5G2KQGzg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+
+    <div id="app">
+
+        <nav class="fixed top-0 left-0 w-full z-50">
+
+            <div class="bg-zinc-100 shadow-md">
+
+                <div
+                    class="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-25 h-[75px] sm:h-[85px] lg:h-[105px] flex items-center justify-between">
+
+                    <div class="flex-shrink-0">
+                        <img src="https://png.pngtree.com/png-vector/20221116/ourmid/pngtree-laundry-services-logo-icon-vector-with-clothes-washing-design-vector-png-image_34661120.png"
+                            alt="" class="w-30 cursor-pointer ">
+                    </div>
+
+                    <div class="hidden lg:flex items-center gap-3 xl:gap-6">
+
+                        <a @click="myhomePage" href="#homePage" class="text-md xl:text-lg 
+                              px-3 py-2 rounded-xl
+                              hover:bg-gray-100 hover:text-emerald-900
+                              hover:font-bold transition hover:scale-105 duration-200">
+                            Home
+                        </a>
+
+                        <a @click="myservicesPage" href="#servicesPage" class="text-md xl:text-lg 
+                              px-3 py-2 rounded-xl
+                              hover:bg-gray-100 hover:text-emerald-900
+                              hover:font-bold transition hover:scale-105 duration-200">
+                            Services
+                        </a>
+
+                        <a @click="mybookPage" href="#bookPage" class="text-md xl:text-lg 
+                              px-3 py-2 rounded-xl
+                              hover:bg-gray-100 hover:text-emerald-900
+                              hover:font-bold transition hover:scale-105 duration-200">
+                            Book
+                        </a>
+
+                        <a @click="mypricingPage" href="#pricingPage" class="text-md xl:text-lg 
+                              px-3 py-2 rounded-xl
+                              hover:bg-gray-100 hover:text-emerald-900
+                              hover:font-bold transition hover:scale-105 duration-200">
+                            Pricing
+                        </a>
+
+                        <a @click="mycontactPage" href="#contactPage" class="text-md xl:text-lg 
+                              px-3 py-2 rounded-xl
+                              hover:bg-gray-100 hover:text-emerald-900
+                              hover:font-bold transition hover:scale-105 duration-200">
+                            Contact
+                        </a>
+
+                        <a @click="myBooking" href="#bookingPage" class="text-md xl:text-lg 
+                              px-3 py-2 rounded-xl
+                              hover:bg-gray-100 hover:text-emerald-900
+                              hover:font-bold transition hover:scale-105 duration-200">
+                            Book Status {{cart.length}}
+                        </a>
+
+                    </div>
+
+
+                    <button @click="finalBooking"
+                        class="cursor-pointer flex-shrink-0 flex gap-2 px-5 py-3 flex items-center justify-center bg-amber-300 rounded-full hover:scale-105 duration-200 hover:bg-amber-500 hover:text-white transition">
+                        Booked
+                    </button>
+
+                </div>
+
+            </div>
+
+        </nav>
+
+        <section class="pt-[75px] sm:pt-[85px] lg:pt-[105px]">
+
+            <!-- BOOK NOW -->
+
+            <div v-if="showModal" id="bookingPage" class="w-full h-screen flex justify-center items-center">
+
+                <div class="flex flex-col h-120 w-180 relative mt-10 px-10 py-5 bg-zinc-100 drop-shadow-lg gap-5">
+
+                    <div class="text-center">
+                        <p class="text-[30px] font-bold">Choose a Service</p>
+                        <p class="text-[13px] text-gray-500">Select the laundry service you need.</p>
+                    </div>
+
+
+                    <div v-for="(p, index) in cart" :key="p.id"
+                        class="h-25 w-full bg-zinc-200 flex justify-center items-center rounded-md">
+
+                        <div class="grid grid-cols-3 gap-5 flex justify-center items-center w-full px-5">
+
+                            <div class="flex items-center gap-3">
+
+                                <img :src="p.img" :alt="" class="w-15 h-15 rounded-md">
+
+                                <h3 class="font-semibold text-md sm:text-base">
+                                    {{ p.name }}
+                                </h3>
+
+                            </div>
+
+                            <p class="font-mono text-lg font-semibold text-gray-600">
+                                ₱{{ p.price}}
+                            </p>
+
+
+                            <div class="flex gap-5 items-center justify-center">
+                                <button @click="confirmBooking(index)"
+                                    class="cursor-pointer flex-shrink-0 flex gap-2 items-center px-3 py-2 text-[12px] bg-amber-400 rounded-full hover:scale-105 duration-200 hover:bg-amber-500 hover:text-white transition">Confirm
+                                    Booking</button>
+
+                                <button @click="cancelBtn (index)"
+                                    class="bg-gray-300 shadow-xl text-[12px] px-3 py-2 rounded-full hover:text-white hover:bg-gray-600 cursor-pointer hover:scale-105 duration-100">Cancel</button>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- BOOKED -->
+            <div v-if="bookingStatus" class="w-full h-screen flex justify-center items-center ">
+                <div class="flex flex-col h-120 w-180 relative mt-10 px-10 py-5 bg-zinc-100 drop-shadow-lg gap-5">
+
+                    <div class="text-center">
+                        <p class="text-[30px] font-bold">My Booking</p>
+
+                    </div>
+
+
+                    <div v-for="i in booking" :key="i.id"
+                        class="h-25 w-full bg-zinc-200 flex justify-center items-center rounded-md">
+
+                        <div class="grid grid-cols-2 gap-5 flex justify-center items-center w-full px-5">
+
+                            <div class="flex items-center gap-3">
+
+                                <img :src="i.img" :alt="" class="w-15 h-15 rounded-md">
+
+                                <h3 class="font-semibold text-md sm:text-base">
+                                    {{ i.name }}
+                                </h3>
+
+                            </div>
+
+                            <p class="font-mono text-lg font-semibold text-gray-600">
+                                ₱{{ i.price}}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- HOMEPAGE -->
+            <section v-if="homePage" id="homePage"
+                class="relative min-h-[650px] sm:min-h-[700px] md:min-h-[750px] bg-cover bg-center flex items-center"
+                style="background-image: url('https://rjkool.com/wp-content/uploads/2021/09/laundry-services.jpg');">
+                <div class="absolute inset-0 bg-black/50"></div>
+
+                <div class="relative z-10 w-full max-w-[1400px] mx-auto px-5 sm:px-8 md:px-12 lg:px-20 py-20">
+
+                    <div class="max-w-3xl text-white">
+
+                        <p class="text-sm sm:text-base md:text-lg tracking-[0.3em] mb-4 text-gray-200">
+                            <i class="fa-solid fa-location-dot"></i> Davao, Mindanao Philippines
+                        </p>
+
+                        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold mb-6">
+                            Fresh Clothes,
+                        </h1>
+
+                        <h1 class="text-4xl text-amber-400 sm:text-5xl md:text-6xl lg:text-7xl font-semibold mb-6">
+                            Zero Hassle.
+                        </h1>
+
+                        <p class="text-base sm:text-lg md:text-xl lg:text-2xl
+                              leading-relaxed text-gray-100">Professional laundry, dry cleaning and shoe cleaning
+                            across Mindanao. Book on this website or messenger and get confirmed in seconds, any time of
+                            the day.
+                        </p>
+
+                        <div class="mt-10 flex flex-col sm:flex-row gap-4">
+
+                            <a href="#bookPage"
+                                class="text-center text-black bg-amber-400 px-6 py-3 sm:px-7 sm:py-4 rounded-xl font-bold text-sm sm:text-base hover:bg-amber-600 hover:text-white hover:scale-105 transition">
+                                Book a Pickup Now →
+                            </a>
+
+                            <a href="#pricingPage"
+                                class="text-center border border-gray-300 px-6 py-3 sm:px-7 sm:py-4 rounded-xl font-bold text-sm sm:text-base hover:bg-amber-600 hover:text-black hover:scale-105 transition">
+                                View Prices →
+                            </a>
+
+                        </div>
+
+                        <div class="flex gap-10 pt-10">
+
+                            <div class="flex justify-center items-center gap-2">
+                                <i class="fa-solid fa-bolt text-amber-400"></i>
+                                <p class="text-sm sm:text-base">
+                                    Same-day express
+                                </p>
+                            </div>
+
+                            <div class="flex justify-center items-center gap-2">
+                                <i class="fa-solid fa-money-check text-amber-400"></i>
+                                <p class="text-sm sm:text-base">
+                                    Gcash, Maya & Cash
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- INFO SECTION -->
+            <section v-if="infoPage" class="bg-sky-100 px-4 sm:px-8 lg:px-14 py-10 sm:py-14">
+
+                <div class="max-w-[1300px] mx-auto">
+
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 flex justify-center items-center">
+
+                        <div
+                            class="flex items-center gap-5 bg-white border border-sky-300 rounded-2xl shadow-2xl p-6 sm:p-8 lg:p-10">
+                            <i class="fa-regular fa-clock text-2xl text-sky-500"></i>
+
+                            <div>
+                                <p class="text-[16px] font-semibold">Save time</p>
+                                <p class="text-[12px] text-gray-700">Pickup and delivery included. No more trips to the
+                                    laundromat.</p>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex items-center gap-5 bg-white border border-sky-300 rounded-2xl shadow-2xl p-6 sm:p-8 lg:p-10">
+                            <i class="fa-solid fa-money-check text-2xl text-sky-500"></i>
+
+                            <div>
+                                <p class="text-[16px] font-semibold">All Payments</p>
+                                <p class="text-[12px] text-gray-700">GCash, Maya, Visa, Mastercard and cash all
+                                    accepted.</p>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex items-center gap-5 bg-white border border-sky-300 rounded-2xl shadow-2xl p-6 sm:p-8 lg:p-10">
+                            <i class="fa-solid fa-leaf text-2xl text-sky-500"></i>
+
+                            <div>
+                                <p class="text-[16px] font-semibold">Eco-friendly</p>
+                                <p class="text-[12px] text-gray-700">Auto-dosing machines dispense the right amount of
+                                    detergent every wash.</p>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex items-center gap-5 bg-white border border-sky-300 rounded-2xl shadow-2xl p-6 sm:p-8 lg:p-10">
+                            <i class="fa-solid fa-bolt text-2xl text-sky-500"></i>
+
+                            <div>
+                                <p class="text-[16px] font-semibold">24/7 Booking</p>
+                                <p class="text-[12px] text-gray-700">Message us on Messenger anytime. Your pickup is
+                                    confirmed right away.</p>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- INFO SECTION -->
+
+            <section v-if="infoPages" class="bg-sky-50 px-5 sm:px-8 md:px-12 lg:px-16 py-16 sm:py-20 lg:py-28">
+                <div class="max-w-[1400px] mx-auto">
+
+                    <div class="text-center mb-12">
+
+                        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold">
+                            Book in Seconds, Completely Hassle-Free
+                        </h2>
+
+                        <p class="text-[13px] tracking-[0.25em] mt-3">
+                            No app download, no sign-up required. Just send us a message and we take care of everything,
+                            24 hours a day, 7 days a week.
+                        </p>
+
+                    </div>
+
+
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 flex justify-center items-center">
+
+                        <div
+                            class="flex items-center justify-center bg-white border border-sky-300 rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10">
+
+                            <div class="text-center">
+                                <i class="fa-regular fa-message text-2xl text-sky-500"></i>
+
+                                <p class="text-[14px] text-amber-400 mt-2 font-semibold">Step 1</p>
+                                <p class="text-[16px] font-semibold mt-3">Message Us</p>
+                                <p class="text-[12px] text-gray-700 mt-2">Send us a message on Facebook Messenger. No
+                                    app download required.</p>
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="flex items-center justify-center bg-white border border-sky-300 rounded-2xl shadow-2xl p-6 sm:p-8 lg:p-10">
+
+                            <div class="text-center">
+                                <i class="fa-solid fa-bolt text-2xl text-sky-500"></i>
+
+                                <p class="text-[14px] text-amber-400 mt-2 font-semibold">Step 2</p>
+                                <p class="text-[16px] font-semibold mt-3">We Confirm</p>
+                                <p class="text-[12px] text-gray-700">Your request is confirmed right away. Slot locked
+                                    in, no waiting.</p>
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="flex items-center justify-center bg-white border border-sky-300 rounded-2xl shadow-2xl p-6 sm:p-8 lg:p-10">
+
+                            <div class="text-center">
+                                <i class="fa-regular fa-truck text-2xl text-sky-500"></i>
+
+                                <p class="text-[14px] text-amber-400 mt-2 font-semibold">Step 3</p>
+                                <p class="text-[16px] font-semibold mt-3">We Pick Up</p>
+                                <p class="text-[12px] text-gray-700">Our team arrives at your door at your chosen
+                                    schedule.</p>
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="flex items-center justify-center bg-white border border-sky-300 rounded-2xl shadow-2xl p-6 sm:p-8 lg:p-10">
+
+                            <div class="text-center">
+                                <i class="fa-solid fa-box-open text-2xl text-sky-500"></i>
+
+                                <p class="text-[14px] text-amber-400 mt-2 font-semibold">Step 4</p>
+                                <p class="text-[16px] font-semibold mt-3">Fresh Delivery</p>
+                                <p class="text-[12px] text-gray-700">Clean, freshly folded laundry delivered back to you
+                                    on time.</p>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="flex items-center justify-center">
+                        <div
+                            class="flex-shrink-0 flex gap-2 items-center px-5 py-3 bg-blue-300 rounded-full hover:scale-105 duration-200 hover:bg-blue-500 hover:text-white transition mt-8">
+
+                            <i class="fa-regular fa-message"></i>
+                            <button class="cursor-pointer">
+                                Book now
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- SERVICES SECTION -->
+
+            <section v-if="servicesPage" id="servicesPage"
+                class="bg-sky-100 px-5 sm:px-8 md:px-12 lg:px-16 py-16 sm:py-20 lg:py-28">
+
+                <div class="max-w-[1400px] mx-auto">
+
+                    <p class="font-bold text-lg sm:text-4xl ">
+                        Our Services
+                    </p>
+
+                    <p class="text-md mt-4 text-gray-500">
+                        From everyday loads to specialty pieces, every garment is treated with care, the right
+                        product,<br>
+                        and years of experience.
+                    </p>
+
+                    <div class="grid grid-cols-1 flex items-center">
+
+
+                        <div class="grid grid-cols-2 mt-12 flex items-center justify-center">
+
+                            <div
+                                class="flex items-center gap-5 bg-white border border-sky-300 rounded-2xl shadow-xl w-160 p-6 sm:p-8 lg:p-10">
+                                <img src="https://static.vecteezy.com/system/resources/thumbnails/068/083/897/small/white-washing-machine-icon-blue-door-appliance-symbol-isolated-on-a-transparent-background-png.png"
+                                    alt="" class="w-15">
+
+                                <div>
+                                    <p class="text-[16px] font-bold">Machine Wash</p>
+                                    <p class="text-[13px] text-gray-700 mt-2">Freshen up everyday clothes, bed linens,
+                                        comforters and casual wear. Washed, dried and folded with care.</p>
+                                </div>
+                            </div>
+
+                            <div
+                                class="flex items-center gap-5 bg-white border border-sky-300 rounded-2xl shadow-xl w-160 p-6 sm:p-8 lg:p-10">
+                                <img src="https://static.vecteezy.com/system/resources/thumbnails/068/655/194/small/hand-washing-in-water-isolated-on-a-transparent-background-basin-cleaning-png.png"
+                                    alt="" class="w-15">
+
+                                <div>
+                                    <p class="text-[16px] font-bold">Hand Wash</p>
+                                    <p class="text-[13px] text-gray-700 mt-2">Gentle treatment for delicate fabrics
+                                        including lace, silk and wool. Each piece handled individually.</p>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="grid grid-cols-4 mt-12 flex items-center justify-center">
+
+                            <div
+                                class="flex items-center gap-5 bg-white border border-sky-300 rounded-2xl shadow-xl w-80 p-6 sm:p-8 lg:p-10">
+                                <div>
+                                    <img src="https://cdn-icons-png.flaticon.com/512/6645/6645261.png" alt=""
+                                        class="w-10">
+
+                                    <p class="text-[16px] font-bold">Dry Cleaning</p>
+                                    <p class="text-[13px] text-gray-700 mt-2">Professional cleaning for suits, barongs,
+                                        blazers, gowns and formal wear that needs careful, expert handling.</p>
+                                </div>
+                            </div>
+
+                            <div
+                                class="flex items-center gap-5 bg-white border border-sky-300 rounded-2xl shadow-xl w-80 p-6 sm:p-8 lg:p-10">
+                                <div>
+                                    <img src="https://cdn-icons-png.flaticon.com/512/5537/5537834.png" alt=""
+                                        class="w-10">
+
+                                    <p class="text-[16px] font-bold">Press & Ironing</p>
+                                    <p class="text-[13px] text-gray-700 mt-2">Crisp, wrinkle-free results for shirts,
+                                        pants, uniforms and formal pieces. Ready to wear.</p>
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center gap-5 bg-white border border-sky-300 rounded-2xl shadow-xl w-80 p-6 sm:p-8 lg:p-10">
+                                <div>
+                                    <img src="https://www.tenovi.com/wp-content/uploads/2024/12/icon-fast.png" alt=""
+                                        class="w-10">
+
+                                    <p class="text-[16px] font-bold">Express Service</p>
+                                    <p class="text-[13px] text-gray-700 mt-2">Need it back fast? Drop off before noon
+                                        and get your laundry returned the same day.</p>
+                                </div>
+                            </div>
+
+                            <div
+                                class="flex items-center gap-5 bg-white border border-sky-300 rounded-2xl shadow-xl w-80 p-6 sm:p-8 lg:p-10">
+                                <div>
+                                    <img src="https://cdn-icons-png.magnific.com/256/17521/17521789.png?semt=ais_white_label"
+                                        alt="" class="w-10">
+
+                                    <p class="text-[16px] font-bold">Shoe Cleaning</p>
+                                    <p class="text-[13px] text-gray-700 mt-2">Deep cleaning for sneakers, rubber shoes
+                                        and slippers. Removes tough stains and restores the original look.</p>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+
+                        <div class="mt-12 flex items-center justify-center">
+
+                            <div class="bg-white border border-sky-300 rounded-2xl shadow-xl w-330 p-6 sm:p-8 lg:p-10">
+
+                                <p class="text-[15px] font-bold text-center">Also Available</p>
+
+                                <div class="flex justify-center gap-5 mt-5">
+                                    <button
+                                        class="px-3 py-2 bg-sky-100 text-[13px] cursor-pointer border border-gray-300 rounded-lg text-sky-600">Beddings
+                                        and Towels</button>
+                                    <button
+                                        class="px-3 py-2 bg-sky-100 text-[13px] cursor-pointer border border-gray-300 rounded-lg text-sky-600">Comforters</button>
+                                    <button
+                                        class="px-3 py-2 bg-sky-100 text-[13px] cursor-pointer border border-gray-300 rounded-lg text-sky-600">Blankets</button>
+                                    <button
+                                        class="px-3 py-2 bg-sky-100 text-[13px] cursor-pointer border border-gray-300 rounded-lg text-sky-600">Stuffed
+                                        Toys</button>
+                                    <button
+                                        class="px-3 py-2 bg-sky-100 text-[13px] cursor-pointer border border-gray-300 rounded-lg text-sky-600">Rugs
+                                        and Carpets</button>
+                                    <button
+                                        class="px-3 py-2 bg-sky-100 text-[13px] cursor-pointer border border-gray-300 rounded-lg text-sky-600">Sofa
+                                        Covers</button>
+                                    <button
+                                        class="px-3 py-2 bg-sky-100 text-[13px] cursor-pointer border border-gray-300 rounded-lg text-sky-600">Curtains</button>
+                                    <button
+                                        class="px-3 py-2 bg-sky-100 text-[13px] cursor-pointer border border-gray-300 rounded-lg text-sky-600">Backpacks
+                                        and Bags</button>
+                                    <button
+                                        class="px-3 py-2 bg-sky-100 text-[13px] cursor-pointer border border-gray-300 rounded-lg text-sky-600">Pillows</button>
+                                    <button
+                                        class="px-3 py-2 bg-sky-100 text-[13px] cursor-pointer border border-gray-300 rounded-lg text-sky-600">Helmets
+                                        and Caps</button>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+                    </div>
+
+            </section>
+
+
+            <!-- BOOK SECTION -->
+            <section v-if="bookPage" id="bookPage"
+                class="bg-sky-50 px-5 sm:px-8 md:px-12 lg:px-16 py-16 sm:py-20 lg:py-28">
+
+                <div class="max-w-[1400px] mx-auto">
+
+                    <p class="font-bold text-lg sm:text-4xl ">
+                        Book Instantly on,
+                    </p>
+
+                    <p class="font-bold text-blue-500 text-lg sm:text-4xl ">
+                        Facebook Messenger
+                    </p>
+
+                    <p class="text-md mt-4 text-gray-500">
+                        Our booking assistant on Messenger confirms your slot in seconds, 24 hours a day. Tap the button
+                        <br>
+                        below and you will be greeted right away, ready to book.
+                    </p>
+
+                    <div class="flex justify-between">
+
+                        <div class="grid grid-cols-1 flex items-center mt-10">
+
+                            <div class="flex items-center gap-5">
+                                <button
+                                    class="px-3 py-2 bg-sky-100 text-lg cursor-pointer border border-gray-500 rounded-lg text-sky-600">01</button>
+
+                                <div>
+                                    <p class="text-[15px] font-bold">Tap to Open the Chat</p>
+                                    <p class="text-[13px] text-gray-700 ">No searching, no typing the page name. The
+                                        button
+                                        takes
+                                        you straight to the conversation.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-5 mt-5">
+                                <button
+                                    class="px-3 py-2 bg-sky-100 text-lg cursor-pointer border border-gray-500 rounded-lg text-sky-600">02</button>
+
+                                <div>
+                                    <p class="text-[15px] font-bold">Choose Your Service</p>
+                                    <p class="text-[13px] text-gray-700 ">Select your laundry type, address and
+                                        preferred
+                                        pickup schedule.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-5 mt-5">
+                                <button
+                                    class="px-3 py-2 bg-sky-100 text-lg cursor-pointer border border-gray-500 rounded-lg text-sky-600">03</button>
+
+                                <div>
+                                    <p class="text-[15px] font-bold">Confirmed in Seconds</p>
+                                    <p class="text-[13px] text-gray-700 ">Our system locks in your booking right away,
+                                        day
+                                        or night, including weekends.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-5 mt-5">
+                                <button
+                                    class="px-3 py-2 bg-sky-100 text-lg cursor-pointer border border-gray-500 rounded-lg text-sky-600">04</button>
+
+                                <div>
+                                    <p class="text-[15px] font-bold">We Handle the Rest</p>
+                                    <p class="text-[13px] text-gray-700 ">We pick up or you drop off. Your clean laundry
+                                        is
+                                        returned to your door.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-5">
+                                <div
+                                    class="flex-shrink-0 flex gap-2 items-center px-5 py-3 bg-amber-400 rounded-xl hover:scale-105 duration-200 hover:bg-amber-500 hover:text-white transition mt-8">
+
+                                    <i class="fa-regular fa-message"></i>
+                                    <button class="cursor-pointer">
+                                        Start Booking now
+                                    </button>
+                                </div>
+
+                                <div
+                                    class="flex-shrink-0 flex gap-2 items-center px-5 py-3 border border-blue-500 rounded-xl hover:scale-105 duration-200 hover:bg-blue-500 hover:text-white transition mt-8">
+
+                                    <i class="fa-solid fa-phone"></i>
+                                    <button class="cursor-pointer">
+                                        Call Us Instead
+                                    </button>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="hidden sm:block">
+                            <div class="w-130 h-[350px] sm:h-[450px] md:h-[500px]">
+                                <img src="https://png.pngtree.com/png-clipart/20250205/original/pngtree-a-person-making-phone-call-with-smartphone-and-watch-in-his-png-image_20309932.png"
+                                    alt="">
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- PRICING SECTION -->
+            <section v-if="pricingPage" id="pricingPage"
+                class="bg-sky-100 px-5 sm:px-8 md:px-12 lg:px-16 py-16 sm:py-20 lg:py-28">
+                <div class="max-w-[1400px] mx-auto">
+
+                    <div class="text-center mb-12">
+
+                        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold">
+                            Clear Pricing Before you Drop Off
+                        </h2>
+
+                        <p class="text-[13px] tracking-[0.25em] mt-3">
+                            All our prices are listed by item or by bag. Pickup and delivery fee applies. All prices
+                            are in Philippine Peso.
+                        </p>
+
+                        <div class="flex items-center gap-5 justify-center">
+                            <button
+                                class="px-3 py-1 border border-sky-300 bg-white text-[12px] rounded-full mt-5 font-semibold"><i
+                                    class="fa-solid fa-circle text-sky-500 text-[8px]"></i> ₱ Price by items or
+                                Bags</button>
+                            <button
+                                class="px-3 py-1 border border-sky-300 bg-white text-[12px] rounded-full mt-5 font-semibold"><i
+                                    class="fa-solid fa-circle text-sky-500 text-[8px]"></i> Pick-up and delivery fees
+                                applies </button>
+                            <button
+                                class="px-3 py-1 border border-sky-300 bg-white text-[12px] rounded-full mt-5 font-semibold"><i
+                                    class="fa-solid fa-circle text-sky-500 text-[8px]"></i> All Prices in the Philippine
+                                Peso</button>
+                        </div>
+
+                    </div>
+
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8">
+
+                        <div v-for="item in items" :key="item.id"
+                            class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1 transition duration-200">
+
+                            <!-- IMAGE -->
+                            <div class="w-full aspect-square overflow-hidden bg-gray-100">
+                                <img :src="item.img" :alt="item.name"
+                                    class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                            </div>
+
+                            <!-- PRODUCT INFO -->
+                            <div class="p-4 sm:p-5">
+
+                                <div class="flex items-center justify-center gap-3">
+
+                                    <div class="min-w-0">
+
+                                        <h3 class="font-semibold text-sm sm:text-base">
+                                            {{ item.name }}
+                                        </h3>
+                                        <p class="font-mono text-sm text-gray-600 mt-2">
+                                            {{ item.info}}
+                                        </p>
+
+                                        <p class="font-mono text-md font-semibold text-gray-600 mt-2">
+                                            ₱{{ item.price}}
+                                        </p>
+
+                                        <div class="flex justify-center items-center">
+                                            <button @click="itemSubscribe(item)"
+                                                class="flex-shrink-0 px-5 py-2 flex items-center justify-center border border-gray-400 rounded-full hover:bg-black hover:text-white transition mt-4">
+                                                Subscribe
+                                            </button>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+
+            </section>
+
+            <section v-if="pricingPages" class="bg-sky-100 px-4 sm:px-8 lg:px-14 py-10 sm:py-14">
+
+                <div class="max-w-[1300px] mx-auto">
+
+                    <div class="text-center mb-12">
+                        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold">
+                            We Accept Almost Every Payment
+                        </h2>
+
+                        <p class="text-[13px] tracking-[0.25em] mt-3">
+                            Pay how you want — digital, card, or cash.
+                        </p>
+
+                    </div>
+
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 flex justify-center items-center ">
+
+                        <!-- GCASH -->
+                        <div
+                            class="flex items-center justify-center bg-white border border-sky-300 rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10 hover:shadow-2xl hover:-translate-y-1 transition duration-200">
+
+                            <div class="text-center">
+                                <i class="fa-solid fa-money-bill text-2xl text-blue-500"></i>
+                                <p class="text-[16px] font-semibold mt-3">Gcash</p>
+                                <p class="text-[12px] text-gray-700 mt-2">Scan QR or send link</p>
+                            </div>
+
+                        </div>
+
+                        <!-- MAYA -->
+                        <div
+                            class="flex items-center justify-center bg-white border border-sky-300 rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10 hover:shadow-2xl hover:-translate-y-1 transition duration-200">
+
+                            <div class="text-center">
+                                <i class="fa-solid fa-wallet text-2xl text-green-500"></i>
+                                <p class="text-[16px] font-semibold mt-3">Maya</p>
+                                <p class="text-[12px] text-gray-700 mt-2">Instant digital payment</p>
+                            </div>
+
+                        </div>
+
+                        <!-- CASH -->
+                        <div
+                            class="flex items-center justify-center bg-white border border-sky-300 rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10 hover:shadow-2xl hover:-translate-y-1 transition duration-200">
+
+                            <div class="text-center">
+                                <i class="fa-solid fa-money-check-dollar text-2xl text-green-500"></i>
+                                <p class="text-[16px] font-semibold mt-3">Cash</p>
+                                <p class="text-[12px] text-gray-700 mt-2">Walk-in & pickup</p>
+                            </div>
+
+                        </div>
+
+                        <!-- BANKACCOUNT -->
+                        <div
+                            class="flex items-center justify-center bg-white border border-sky-300 rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10 hover:shadow-2xl hover:-translate-y-1 transition duration-200">
+
+                            <div class="text-center">
+                                <i class="fa-brands fa-cc-visa text-2xl text-blue-500"></i>
+                                <p class="text-[16px] font-semibold mt-3">Visa/Mastercard</p>
+                                <p class="text-[12px] text-gray-700 mt-2">Credit & debit cards</p>
+                            </div>
+
+                        </div>
+
+
+
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- CONTACT SECTION -->
+            <section v-if="contactPage" id="contactPage"
+                class="bg-sky-50 px-5 sm:px-8 md:px-12 lg:px-16 py-16 sm:py-20 lg:py-28">
+
+                <div class="max-w-[1400px] mx-auto">
+
+                    <div class="text-center mb-12">
+                        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold">
+                            We'd Love To Hear from You
+                        </h2>
+
+                        <p class="text-[13px] tracking-[0.25em] mt-3">
+                            Questions, special requests, or corporate inquiries — we're here to help.
+                        </p>
+
+                    </div>
+
+                    <div class="flex justify-center items-center m-20">
+
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+
+                            <div
+                                class="flex justify-center gap-5 bg-white border border-sky-300 rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10">
+
+
+                                <div>
+                                    <p class="text-[16px] font-bold">Contact Details</p>
+
+                                    <div class="flex gap-5 mt-5 items-center">
+                                        <i class="fa-solid fa-location-dot text-xl text-sky-500"></i>
+
+                                        <div>
+                                            <p class="text-gray-500 font-sans text-[15px]">ADDRESS</p>
+                                            <p class="text-[13px] font-sans">7533 Santillan St., Tagum City</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex gap-5 mt-5 items-center">
+                                        <i class="fa-solid fa-phone text-xl text-sky-500"></i>
+
+                                        <div>
+                                            <p class="text-gray-500 font-sans text-[15px]">PHONE</p>
+                                            <p class="text-[13px] font-sans">0912-345-6789</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex gap-5 mt-5 items-center">
+                                        <i class="fa-regular fa-envelope text-xl text-sky-500"></i>
+
+                                        <div>
+                                            <p class="text-gray-500 font-sans text-[15px]">EMAIL</p>
+                                            <p class="text-[13px] font-sans">thelaundry@gmail.com</p>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+
+                            <div
+                                class="gap-5 bg-white border border-sky-300 rounded-2xl shadow-xl w-200 p-6 sm:p-8 lg:p-10">
+
+
+                                <div>
+                                    <p class="text-[16px] font-bold">Send us a message</p>
+
+                                    <div class="grid grid-cols-2">
+                                        <div>
+                                            <p class="mt-5">Full Name *</p>
+                                            <input class="px-10 py-2 border border-gray-400 mt-2" type="text"
+                                                placeholder="">
+                                        </div>
+
+                                        <div>
+                                            <p class="mt-5">Email *</p>
+                                            <input class="px-10 py-2 border border-gray-400 mt-2" type="text"
+                                                placeholder="">
+                                        </div>
+                                    </div>
+
+
+                                    <div>
+                                        <p class="mt-5">Message *</p>
+                                        <textarea class="px-10 py-2 w-100 h-fit border border-gray-400 mt-2" name=""
+                                            id=""></textarea>
+                                    </div>
+
+                                    <div class="mt-5">
+                                        <button
+                                            class="px-5 py-2 bg-blue-300 rounded-lg cursor-pointer hover:scale-105 duration-200 hover:bg-blue-500 hover:text-white transition"><i
+                                                class="fa-regular fa-paper-plane"></i> Send Message</button>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- FOOTER -->
+            <footer v-if="footerPage" class="bg-[#8FAEAF] px-5 sm:px-8 md:px-12 lg:px-16 py-16">
+
+                <div class="max-w-[1400px] mx-auto">
+
+                    <div class="border-t border-black/20 mt-12 pt-10">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+
+                            <div class="text-center md:text-left">
+
+                                <img src="https://png.pngtree.com/png-vector/20221116/ourmid/pngtree-laundry-services-logo-icon-vector-with-clothes-washing-design-vector-png-image_34661120.png"
+                                    alt="" class="w-25 sm:w-28">
+
+                                <div class="flex justify-center md:justify-start gap-3">
+
+
+                                    <p class="font-semibold text-sm">
+                                        Fresh laundry, dry cleaning & shoe care — right to your door. Serving Metro <br>
+                                        Manila since 2016.
+                                    </p>
+
+                                </div>
+
+                                <div class="flex justify-center md:justify-start gap-4 mt-5">
+
+                                    <i class="fa-brands fa-facebook
+                                          text-xl hover:scale-110 transition">
+                                    </i>
+
+                                    <i class="fa-brands fa-square-instagram
+                                          text-xl hover:scale-110 transition">
+                                    </i>
+
+                                </div>
+
+                                <div class="flex gap-5 mt-5">
+                                    <a class="text-[15px] text-gray-800 font-sans font-semibold hover:underline cursor-pointer "
+                                        href="#servicesPage">Services</a>
+                                    <a class="text-[15px] text-gray-800 font-sans font-semibold hover:underline cursor-pointer "
+                                        href="#pricingPage">Pricing</a>
+                                    <a class="text-[15px] text-gray-800 font-sans font-semibold hover:underline cursor-pointer "
+                                        href="#contactPage">Contact</a>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-gray-900 font-sans font-bold mt-5 text-[12px]">LEGAL</h3>
+                                </div>
+
+                                <div class="flex gap-5 mt-5">
+                                    <a class="text-[12px] text-gray-900 font-sans font-semibold hover:underline cursor-pointer "
+                                        href="">Privacy Policy</a>
+                                    <a class="text-[12px] text-gray-900 font-sans font-semibold hover:underline cursor-pointer "
+                                        href="">Terms of Services</a>
+                                    <a class="text-[12px] text-gray-900 font-sans font-semibold hover:underline cursor-pointer "
+                                        href="">Refund Policy</a>
+                                    <a class="text-[12px] text-gray-900 font-sans font-semibold hover:underline cursor-pointer "
+                                        href="">Data Deletion</a>
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="text-center md:text-left">
+
+                                <div>
+
+                                    <div class="flex gap-5 mt-5 items-center">
+                                        <i class="fa-solid fa-location-dot text-xl text-sky-800"></i>
+
+                                        <div>
+
+                                            <p class="text-[13px] font-sans">7533 Santillan St., Tagum City</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex gap-5 mt-5 items-center">
+                                        <i class="fa-solid fa-phone text-xl text-sky-800"></i>
+
+                                        <div>
+
+                                            <p class="text-[13px] font-sans">0912-345-6789</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex gap-5 mt-5 items-center">
+                                        <i class="fa-regular fa-envelope text-xl text-sky-800"></i>
+
+                                        <div>
+
+                                            <p class="text-[13px] font-sans">thelaundry@gmail.com</p>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                                <div class="bg-sky-900 rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10 mt-5">
+
+                                    <p class="text-[15px] text-white/80 font-semibold mt-3">Business Hour</p>
+                                    <p class="text-[16px] text-white mt-2">Monday - Sunday · 9:00 AM - 6:00 PM</p>
+                                    <p class="text-[12px] text-white/50 mt-2">Closed on public holidays</p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="text-center mt-10 pt-5 border-t border-black/10">
+                            <p class="text-xs sm:text-sm">Copyright © 2026 thelaundry.com.All Rights Reserved.</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </footer>
+
+        </section>
+    </div>
+
+
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    bookNow: true,
+                    showModal: false,
+                    bookingStatus: false,
+
+                    homePage: true,
+                    infoPage: true,
+                    infoPages: true,
+                    servicesPage: true,
+                    bookPage: true,
+                    pricingPage: true,
+                    pricingPages: true,
+                    contactPage: true,
+                    bookingPage: true,
+                    footerPage: true,
+
+
+                    cart: [],
+                    booking: [],
+                    totalItem: 0,
+
+                    items: [
+                        {
+                            id: 1,
+
+                            img: "https://png.pngtree.com/png-clipart/20250514/original/pngtree-washing-machine-and-clothes-vector-illustration-logo-laundry-art-design-png-image_20970235.png",
+
+                            name: "Machine Wash",
+
+                            info: "12 Kilos per pick up, 4 pick ups a month.Wash & Fold items only.Free Washwell Laundry Bag",
+
+                            price: 2000 + " package"
+                        },
+
+                        {
+                            id: 2,
+
+                            img: "https://png.pngtree.com/png-clipart/20241021/original/pngtree-3d-laundry-items-images-with-iron-on-transparent-background-png-image_16440447.png",
+
+                            name: "Press and Ironing",
+
+                            info: "6 pcs per pick up , 2 pickups a month comes with free garment bag",
+
+                            price: 1500 + " package"
+                        },
+
+                        {
+                            id: 3,
+
+                            img: "https://cdn-icons-png.flaticon.com/512/4634/4634823.png",
+
+                            name: "Dry Cleaning",
+
+                            info: "6 pcs per pick-up, 2 pick-ups a month comes with free garment bag",
+
+
+                            price: 2999 + " package"
+                        },
+
+                        {
+                            id: 4,
+
+                            img: "https://png.pngtree.com/png-vector/20240309/ourmid/pngtree-shoe-care-accessories-landing-header-vector-png-image_11904002.png",
+
+                            name: "Footwear & Special Item",
+
+                            info: "6 pcs per pick up , 2 pickups a month comes with free garment bag",
+
+                            price: 1500 + " package"
+                        },
+
+                    ]
+
+                }
+            },
+            methods: {
+                myBooking() {
+                    this.showModal = true;
+                    this.homePage = false;
+                    this.infoPage = false;
+                    this.infoPages = false;
+                    this.servicesPage = false;
+                    this.bookPage = false;
+                    this.pricingPage = false;
+                    this.pricingPages = false;
+                    this.contactPage = false;
+                    this.bookingStatus = false;
+                    this.footerPage = false;
+
+                },
+
+                finalBooking() {
+                    this.bookingStatus = true;
+                    this.showModal = false;
+                    this.homePage = false;
+                    this.infoPage = false;
+                    this.infoPages = false;
+                    this.servicesPage = false;
+                    this.bookPage = false;
+                    this.pricingPage = false;
+                    this.pricingPages = false;
+                    this.contactPage = false;
+                    this.footerPage = false;
+
+
+                },
+
+                myhomePage() {
+                    this.homePage = true;
+                    this.infoPage = true;
+                    this.infoPages = true;
+                    this.servicesPage = true;
+                    this.bookPage = true;
+                    this.pricingPage = true;
+                    this.pricingPages = true;
+                    this.contactPage = true;
+                    this.footerPage = true;
+                    this.showModal = false;
+                    this.bookingStatus = false;
+                },
+
+                myservicesPage() {
+                    this.homePage = true;
+                    this.infoPage = true;
+                    this.infoPages = true;
+                    this.servicesPage = true;
+                    this.bookPage = true;
+                    this.pricingPage = true;
+                    this.pricingPages = true;
+                    this.contactPage = true;
+                    this.footerPage = true;
+                    this.showModal = false;
+                    this.bookingStatus = false;
+                },
+
+                mybookPage() {
+                    this.homePage = true;
+                    this.infoPage = true;
+                    this.infoPages = true;
+                    this.servicesPage = true;
+                    this.bookPage = true;
+                    this.pricingPage = true;
+                    this.pricingPages = true;
+                    this.contactPage = true;
+                    this.footerPage = true;
+                    this.showModal = false;
+                    this.bookingStatus = false;
+                },
+
+                mypricingPage() {
+                    this.homePage = true;
+                    this.infoPage = true;
+                    this.infoPages = true;
+                    this.servicesPage = true;
+                    this.bookPage = true;
+                    this.pricingPage = true;
+                    this.pricingPages = true;
+                    this.contactPage = true;
+                    this.footerPage = true;
+                    this.showModal = false;
+                    this.bookingStatus = false;
+                },
+
+                mycontactPage() {
+                    this.homePage = true;
+                    this.infoPage = true;
+                    this.infoPages = true;
+                    this.servicesPage = true;
+                    this.bookPage = true;
+                    this.pricingPage = true;
+                    this.pricingPages = true;
+                    this.contactPage = true;
+                    this.footerPage = true;
+                    this.showModal = false;
+                    this.bookingStatus = false;
+                },
+
+
+                itemSubscribe(item) {
+                    alert('BOOK ADDED SUCCESSFULLY');
+
+                    this.cart.push({ img: item.img, price: item.price, name: item.name, info: item.info });
+                    this.totalItem += item.price;
+                },
+
+
+                confirmBooking(index) {
+                    alert('Confirmed Booking Successfully');
+
+                    this.totalItem -= this.cart[index].price;
+                    this.booking.unshift({ img: this.cart[index].img, price: this.cart[index].price, name: this.cart[index].name, info: this.cart[index].info });
+                    this.cart.splice(index, 1);
+
+
+                },
+
+                cancelBtn(index) {
+                    this.totalItem -= this.cart[index].price;
+                    this.cart.splice(index, 1);
+
+                },
+
+
+
+
+            }
+
+        }).mount('#app');
+    </script>
+</body>
+
+</html>
